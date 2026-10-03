@@ -1,0 +1,13 @@
+{
+  "name": "gelismis-kurye-sistemi",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Gelismis Kurye Sistemi - kurye kendi paketini kendi alir, gercek SambaPOS odeme turleriyle teslim eder, restoran canli izler. Mevcut kurye takip uygulamalarindan tamamen bagimsiz.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "web-push": "^3.6.7",
+    "ws": "^8.18.0"
+  }
+}

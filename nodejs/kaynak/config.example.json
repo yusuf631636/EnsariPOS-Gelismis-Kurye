@@ -1,0 +1,13 @@
+{
+  "server": "DESKTOP-ADI",
+  "database": "SAMBAPOS5",
+  "user": "sa",
+  "password": "DEGISTIR_BURAYA",
+  "options": {
+    "encrypt": false,
+    "trustServerCertificate": true
+  },
+  "port": 4090,
+  "gkActivationKey": "ADMIN_PANELDEN_GELISMIS_KURYE_ICIN_URETILEN_AYRI_ANAHTAR",
+  "cloudServerUrl": "https://app.ornek-alanadi.com"
+}

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Gelişmiş Kurye Sistemi</title>
+<meta name="theme-color" content="#0d0d0d">
+<link rel="manifest" href="/courier/manifest.webmanifest">
+<link rel="icon" href="/courier/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/courier/icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kurye">
+<link rel="stylesheet" href="/style.css">
+<script src="/theme.js"></script>
+</head>
+<body>
+
+<div id="loginView">
+  <div class="login-card">
+    <h1>Gelişmiş Kurye Sistemi</h1>
+    <p class="muted">PIN kodunuzla giriş yapın</p>
+    <input id="pinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••">
+    <button class="primary" id="loginBtn">Giriş Yap</button>
+    <div id="loginErr" class="err" hidden></div>
+    <a href="/restoran" class="admin-link">Restoran / yönetici girişi →</a>
+  </div>
+</div>
+
+<div id="mainView" hidden>
+  <header>
+    <div><span class="dot" id="statusDot"></span><span id="courierName"></span> <button id="locWarnBtn" class="loc-warn" hidden type="button">⚠️ Konum paylaşılamıyor, dokunun</button></div>
+    <div style="display:flex;gap:8px">
+      <button class="theme-btn" id="themeBtn" title="Tema">🌓</button>
+      <button class="ghost" id="settingsBtn">Ayarlar</button>
+      <button class="ghost" id="logoutBtn">Çıkış</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button id="tabUnassigned" class="active">Bekleyen Paketler<span class="count" id="countUnassigned"></span></button>
+    <button id="tabMine">Üzerimdekiler<span class="count" id="countMine"></span></button>
+    <button id="tabDeliveries">Teslimatlarım</button>
+    <button id="tabEod">Gün Sonu</button>
+  </div>
+
+  <div id="unassignedView">
+    <div id="unassignedList" class="orders"></div>
+    <div id="unassignedEmpty" class="empty" hidden>Şu anda bekleyen paket yok.</div>
+    <div id="missedWrap" hidden>
+      <div class="muted" style="padding:4px 14px;font-size:12.5px">Kaçırılanlar (bu oturumda)</div>
+      <div id="missedList" class="orders" style="padding-top:0"></div>
+    </div>
+  </div>
+
+  <div id="mineView" hidden>
+    <div id="mineList" class="orders"></div>
+    <div id="mineEmpty" class="empty" hidden>Üzerinizde sipariş yok.</div>
+  </div>
+
+  <div id="deliveriesView" hidden>
+    <div id="deliveriesSummary" class="my-stats"></div>
+    <div id="deliveriesList" class="orders"></div>
+    <div id="deliveriesEmpty" class="empty" hidden>Bugün henüz teslimat yok.</div>
+  </div>
+
+  <div id="eodView" hidden>
+    <div class="eod-hero">
+      <div class="big" id="eodTotal">0,00 ₺</div>
+      <div class="sub" id="eodCount">0 teslimat</div>
+    </div>
+    <div id="eodBreakdown" class="pay-breakdown"></div>
+  </div>
+</div>
+
+<div id="alarmBannerHost"></div>
+<div id="offlineBannerHost"></div>
+
+<div id="fullscreenAlert" class="fullscreen-alert" hidden>
+  <div class="fa-inner">
+    <div class="fa-icon">🔴</div>
+    <h1 id="faTitle">YENİ BEKLEYEN SİPARİŞ</h1>
+    <div id="faSub" class="fa-sub"></div>
+    <button class="fa-ok" id="faOkBtn">Gördüm</button>
+    <button class="fa-snooze" id="faSnoozeBtn">5 dakika sustur</button>
+  </div>
+</div>
+
+<div id="settingsSheet" class="sheet" hidden>
+  <div class="sheet-inner">
+    <button class="close" id="closeSettingsSheet">✕</button>
+    <h2>Ayarlar</h2>
+    <div class="settings-list" style="padding:0">
+      <div class="settings-group">
+        <h3>Tema</h3>
+        <div class="seg" id="themeSeg">
+          <button data-theme-opt="system">Sistem</button>
+          <button data-theme-opt="light">Açık</button>
+          <button data-theme-opt="dark">Koyu</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <h3>Bekleyen Sipariş Bildirimi</h3>
+        <p class="muted" style="margin:0 0 10px;font-size:12.5px">Kapatırsanız yeni bekleyen sipariş geldiğinde ses/tam ekran uyarı ÇALMAZ, ama sipariş yine "Bekleyen Paketler" listesinde normal şekilde görünür.</p>
+        <div class="seg" id="pendingAlarmSeg">
+          <button data-pending-opt="on">Bildir (Sesli)</button>
+          <button data-pending-opt="off">Bildirme (Sadece Listede)</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <h3>Alarm</h3>
+        <div class="settings-row" style="display:block">
+          <label>Hazır ayar</label>
+          <div class="seg" id="presetSeg" style="margin-top:8px">
+            <button data-preset-opt="normal">Normal</button>
+            <button data-preset-opt="high">Yüksek</button>
+            <button data-preset-opt="max">Çok Yüksek</button>
+            <button data-preset-opt="repeat">Tekrarlı</button>
+          </div>
+        </div>
+        <div class="settings-row">
+          <label>Ses seviyesi</label>
+          <input type="range" id="volumeRange" min="0" max="100" value="90">
+        </div>
+        <div class="settings-row" style="display:block">
+          <label>Tekrar</label>
+          <div class="seg" id="repeatSeg" style="margin-top:8px">
+            <button data-repeat-opt="once">1 kez</button>
+            <button data-repeat-opt="x3">3 kez</button>
+            <button data-repeat-opt="until-dismissed">Görene kadar</button>
+          </div>
+        </div>
+        <div class="settings-row" style="display:block">
+          <label>Bildirim türü</label>
+          <div class="seg" id="typeSeg" style="margin-top:8px">
+            <button data-type-opt="sound-vibrate">Sesli + Titreşim</button>
+            <button data-type-opt="vibrate-only">Sadece Titreşim</button>
+            <button data-type-opt="visual-only">Sadece Görsel</button>
+          </div>
+        </div>
+        <button class="test-alarm-btn" id="testAlarmBtn">Alarmı test et</button>
+      </div>
+      <div class="settings-group">
+        <h3>Arka Plan Bildirimleri</h3>
+        <p class="muted" style="margin:0 0 10px;font-size:12.5px">Uygulama tamamen kapalıyken de (sekme kapalı) yeni sipariş/atama bildirimi almak için izin verin. Not: bu durumda cihazın kendi standart bildirim sesi çalar; uygulama açıkken yukarıdaki özel alarm sesi kullanılır.</p>
+        <button class="test-alarm-btn" id="enablePushBtn">Arka plan bildirimlerini etkinleştir</button>
+        <div id="pushStatus" class="muted" style="font-size:12px;margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="contentSheet" class="sheet" hidden>
+  <div class="sheet-inner">
+    <button class="close" id="closeContentSheet">✕</button>
+    <h2>Sipariş İçeriği</h2>
+    <div id="contentRows"></div>
+  </div>
+</div>
+
+<div id="paySheet" class="sheet" hidden>
+  <div class="sheet-inner">
+    <button class="close" id="closePaySheet">✕</button>
+    <h2>Ödeme Türü Seçin</h2>
+    <div id="payGrid" class="pay-grid"></div>
+    <div id="tenderRow" hidden style="margin-top:6px">
+      <label class="muted" style="font-size:12.5px;display:block;margin-bottom:6px">Müşteriden alınan tutar (nakit)</label>
+      <input type="number" id="tenderInput" inputmode="decimal" step="0.01" style="width:100%;min-height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font-size:16px;text-align:center">
+      <div id="changePreview" class="muted" style="font-size:12.5px;text-align:center;margin-top:6px"></div>
+    </div>
+    <button class="no-payment-btn" id="noPaymentBtn">Ödeme alınmadı (adisyon açık kalsın)</button>
+    <button class="confirm-btn" id="confirmDeliverBtn" disabled>Teslim Et</button>
+    <div id="payErr" class="err" hidden></div>
+  </div>
+</div>
+
+<script src="/courier/alarm.js"></script>
+<script src="/courier/app.js"></script>
+</body>
+</html>

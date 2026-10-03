@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Gelişmiş Kurye Sistemi</title>
+<meta name="theme-color" content="#0d0d0d">
+<link rel="manifest" href="/courier/manifest.webmanifest">
+<link rel="icon" href="/courier/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/courier/icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kurye">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div id="loginView">
+  <div class="login-card">
+    <h1>Gelişmiş Kurye Sistemi</h1>
+    <p class="muted">PIN kodunuzla giriş yapın</p>
+    <input id="pinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••">
+    <button class="primary" id="loginBtn">Giriş Yap</button>
+    <div id="loginErr" class="err" hidden></div>
+    <a href="/restoran" class="admin-link">Restoran / yönetici girişi →</a>
+  </div>
+</div>
+
+<div id="mainView" hidden>
+  <header>
+    <div><span class="dot" id="statusDot"></span><span id="courierName"></span> <button id="locWarnBtn" class="loc-warn" hidden type="button">⚠️ Konum paylaşılamıyor, dokunun</button></div>
+    <button class="ghost" id="logoutBtn">Çıkış</button>
+  </header>
+
+  <div class="tabs">
+    <button id="tabUnassigned" class="active">Bekleyen Paketler<span class="count" id="countUnassigned"></span></button>
+    <button id="tabMine">Üzerimdekiler<span class="count" id="countMine"></span></button>
+    <button id="tabDeliveries">Teslimatlarım</button>
+  </div>
+
+  <div id="unassignedView">
+    <div id="unassignedList" class="orders"></div>
+    <div id="unassignedEmpty" class="empty" hidden>Şu anda bekleyen paket yok.</div>
+  </div>
+
+  <div id="mineView" hidden>
+    <div id="mineList" class="orders"></div>
+    <div id="mineEmpty" class="empty" hidden>Üzerinizde sipariş yok.</div>
+  </div>
+
+  <div id="deliveriesView" hidden>
+    <div id="deliveriesSummary" class="my-stats"></div>
+    <div id="deliveriesList" class="orders"></div>
+    <div id="deliveriesEmpty" class="empty" hidden>Bugün henüz teslimat yok.</div>
+  </div>
+</div>
+
+<div id="contentSheet" class="sheet" hidden>
+  <div class="sheet-inner">
+    <button class="close" id="closeContentSheet">✕</button>
+    <h2>Sipariş İçeriği</h2>
+    <div id="contentRows"></div>
+  </div>
+</div>
+
+<div id="paySheet" class="sheet" hidden>
+  <div class="sheet-inner">
+    <button class="close" id="closePaySheet">✕</button>
+    <h2>Ödeme Türü Seçin</h2>
+    <div id="payGrid" class="pay-grid"></div>
+    <button class="no-payment-btn" id="noPaymentBtn">Ödeme alınmadı (adisyon açık kalsın)</button>
+    <button class="confirm-btn" id="confirmDeliverBtn" disabled>Teslim Et</button>
+    <div id="payErr" class="err" hidden></div>
+  </div>
+</div>
+
+<script src="/courier/app.js"></script>
+</body>
+</html>

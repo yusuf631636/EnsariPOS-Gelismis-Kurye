@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Gelişmiş Kurye Sistemi - Restoran</title>
+<meta name="theme-color" content="#0d0d0d">
+<link rel="manifest" href="/restoran/manifest.webmanifest">
+<link rel="icon" href="/restoran/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/restoran/icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Restoran">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="/style.css">
+<script src="/theme.js"></script>
+</head>
+<body>
+
+<div id="loginView">
+  <div class="login-card" id="step1Card">
+    <h1>Restoran Ekranı</h1>
+    <p class="muted">AlfaPOS hesabınızdaki e-posta/telefon ve ŞİFRENİZLE giriş yapın</p>
+    <input id="identifierInput" type="text" placeholder="E-posta veya telefon" style="width:100%;min-height:48px;margin:14px 0 0;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font-size:15px;text-align:center">
+    <input id="passwordInput" type="password" placeholder="AlfaPOS panel şifreniz" style="width:100%;min-height:48px;margin:10px 0 0;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font-size:15px;text-align:center">
+    <button class="primary" id="step1Btn">İleri</button>
+    <div id="step1Err" class="err" hidden></div>
+  </div>
+  <div class="login-card" id="step2Card" hidden>
+    <h1>SambaPOS PIN'iniz</h1>
+    <p class="muted">Bu bilgisayardaki SambaPOS'ta kullandığınız yönetici PIN'i</p>
+    <input id="pinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••">
+    <button class="primary" id="step2Btn">Giriş Yap</button>
+    <button class="ghost" id="backBtn" style="margin-top:8px">Geri</button>
+    <div id="step2Err" class="err" hidden></div>
+  </div>
+</div>
+
+<div id="mainView" hidden>
+  <header>
+    <div><span class="dot" id="statusDot"></span>Gelişmiş Kurye Sistemi</div>
+    <div style="display:flex;gap:8px">
+      <button class="ghost" id="logoutBtn">Çıkış</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button id="tabFeed" class="active">Canlı Akış</button>
+    <button id="tabMap">Kurye Konumları</button>
+    <button id="tabReport">Paketçi Raporu</button>
+    <button id="tabPayments">Ödeme Raporu</button>
+    <button id="tabCouriers">Kurye Ayarları</button>
+    <button id="tabSettings">Ayarlar</button>
+  </div>
+
+  <div id="feedView">
+    <div id="feed" class="live-feed"></div>
+    <div id="feedEmpty" class="empty">Henüz bir olay yok. Kurye bir paket aldığında veya teslim ettiğinde burada anında görünecek.</div>
+  </div>
+
+  <div id="mapView" hidden>
+    <div id="map" style="height:60vh"></div>
+    <div id="locationList" class="live-feed"></div>
+  </div>
+
+  <div id="reportView" hidden>
+    <div id="reportList" class="live-feed"></div>
+    <div id="reportEmpty" class="empty" hidden>Bugün için veri yok.</div>
+  </div>
+
+  <div id="paymentsView" hidden>
+    <div class="date-picker">
+      <input type="date" id="paymentsDate">
+      <button class="ghost" id="paymentsTodayBtn">Bugün</button>
+    </div>
+    <div id="paymentsBreakdown" class="pay-breakdown"></div>
+    <div class="detail-wrap">
+      <table class="detail-table">
+        <thead><tr>
+          <th>Sipariş No</th><th>Saat</th><th>Kaynak</th><th>Kurye</th><th>Müşteri</th>
+          <th>Sipariş Tutarı</th><th>Ödeme Türü</th><th>Alınan Tutar</th><th>Para Üstü</th><th>Net Tutar</th>
+        </tr></thead>
+        <tbody id="paymentsDetailBody"></tbody>
+      </table>
+      <div id="paymentsDetailEmpty" class="empty" hidden>Bu tarih için teslimat yok.</div>
+    </div>
+  </div>
+
+  <div id="couriersView" hidden>
+    <p class="muted" style="padding:14px 14px 0;font-size:12.5px">Kuryeler ve PIN kodları SambaPOS'taki "Paketçiler" kullanıcı rolünden okunur. Yeni kurye eklemek/PIN değiştirmek için SambaPOS'un kendi Kullanıcılar ekranını kullanın.</p>
+    <div id="couriersList" class="live-feed"></div>
+    <div id="couriersEmpty" class="empty" hidden>Hiç kurye kullanıcısı bulunamadı.</div>
+  </div>
+
+  <div id="settingsView" hidden>
+    <div class="settings-list">
+      <div class="settings-group">
+        <h3>Tema</h3>
+        <div class="seg" id="themeSeg">
+          <button data-theme-opt="system">Sistem</button>
+          <button data-theme-opt="light">Açık</button>
+          <button data-theme-opt="dark">Koyu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/restoran/app.js"></script>
+</body>
+</html>
